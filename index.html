@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>隔空快传</title>
+    <script src="https://unpkg.com/peerjs@1.4.7/dist/peerjs.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <style>
+        :root {
+            --primary: #007AFF;
+            --glass-bg: rgba(255, 255, 255, 0.55); 
+            --glass-border: rgba(255, 255, 255, 0.7);
+            --glass-shadow: 0 12px 40px 0 rgba(31, 38, 135, 0.1); 
+            --text-main: #1d1d1f;
+            --text-sub: #86868b;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Helvetica Neue", sans-serif;
+            margin: 0;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: var(--text-main);
+            
+            background: linear-gradient(-45deg, #e0c3fc, #9fa8da, #8ec5fc, #b2ebf2);
+            background-size: 400% 400%;
+            
+            animation: gradientBG 90s ease infinite;
+            
+            padding: 20px;
+            box-sizing: border-box;
+        }
+        
+        @keyframes gradientBG {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        .glass-card {
+            width: 100%;
+            max-width: 420px;
+            background: var(--glass-bg);
+            backdrop-filter: blur(30px) saturate(160%); 
+            -webkit-backdrop-filter: blur(30px) saturate(160%);
+            border-radius: 32px; 
+            border: 1px solid var(--glass-border);
+            box-shadow: var(--glass-shadow);
+            padding: 36px 28px;
+            box-sizing: border-box;
+            position: relative;
+            overflow: hidden;
+            animation: floatUp 0.8s cubic-bezier(0.2, 0.8, 0.2, 1);
+        }
+
+        .glass-card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.6), transparent);
+        }
+
+        h2 {
+            margin: 0 0 8px 0;
+            text-align: center;
+            font-weight: 700;
+            font-size: 28px;
+            letter-spacing: -0.5px;
+            color: #1d1d1f;
+        }
+        
+        .subtitle {
+            text-align: center;
+            font-size: 14px;
+            color: var(--text-sub);
+            margin-bottom: 28px;
+            font-weight: 500;
+            letter-spacing: 0.5px;
+        }
+
+        .status-pill {
+            display: inline-flex;
+            align-items: center;
+            padding: 8px 18px;
+            background: rgba(255, 255, 255, 0.5);
+            border-radius: 30px;
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-sub);
+            margin-bottom: 28px;
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.02);
+            transition: all 0.3s;
+        }
+        .status-container { text-align: center; }
+        
+        .status-active { color: #2E7D32; background: rgba(220, 252, 231, 0.7); border-color: rgba(220, 252, 231, 0.9); }
+        .status-error { color: #C62828; background: rgba(255, 235, 238, 0.7); }
+        .panel { display: none; animation: fadeIn 0.4s ease; }
+
+        .qr-wrapper {
+            background: white;
+            padding: 20px;
+            border-radius: 24px;
+            display: inline-block;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.04);
+            margin-bottom: 20px;
+        }
+        .qr-wrapper img { display: block; }
+        .link-box {
+            background: rgba(255, 255, 255, 0.5);
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            padding: 16px;
+            border-radius: 18px;
+            font-size: 13px;
+            color: var(--text-main);
+            text-align: center;
+            word-break: break-all;
+            cursor: pointer;
+            transition: 0.2s;
+            font-family: 'SF Mono', Menlo, monospace;
+            position: relative;
+        }
+        .link-box:hover { background: rgba(255, 255, 255, 0.7); }
+        .link-box:active { transform: scale(0.98); }
+        .link-box::after {
+            content: '点击复制链接';
+            position: absolute;
+            bottom: -22px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 11px;
+            color: var(--text-sub);
+            opacity: 0;
+            transition: 0.2s;
+            white-space: nowrap;
+        }
+        .link-box:hover::after { opacity: 1; bottom: -26px; }
+
+        .drop-zone {
+            border: 2px dashed rgba(0, 122, 255, 0.25);
+            background: rgba(0, 122, 255, 0.02);
+            border-radius: 24px;
+            padding: 44px 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-bottom: 20px;
+        }
+        .drop-zone:hover { background: rgba(0, 122, 255, 0.06); border-color: var(--primary); transform: translateY(-2px); }
+        .drop-icon { font-size: 48px; display: block; margin-bottom: 12px; filter: drop-shadow(0 4px 8px rgba(0,122,255,0.15)); }
+        .drop-text { font-size: 16px; font-weight: 600; color: var(--primary); }
+
+        #file-list { max-height: 300px; overflow-y: auto; padding-right: 4px; }
+        #file-list::-webkit-scrollbar { width: 4px; }
+        #file-list::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.1); border-radius: 4px; }
+
+        .file-item {
+            background: rgba(255, 255, 255, 0.6);
+            border-radius: 18px;
+            padding: 14px 18px;
+            margin-bottom: 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border: 1px solid rgba(255,255,255,0.4);
+            animation: slideIn 0.3s ease;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.02);
+        }
+        .file-info { overflow: hidden; margin-right: 10px; }
+        .file-name { font-size: 15px; font-weight: 600; color: var(--text-main); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        .file-status { font-size: 12px; color: var(--text-sub); margin-top: 4px; }
+        
+        .btn-action {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 600;
+            text-decoration: none;
+            box-shadow: 0 4px 12px rgba(0, 122, 255, 0.25);
+            transition: 0.2s;
+        }
+        .btn-action:active { transform: scale(0.96); box-shadow: 0 2px 6px rgba(0, 122, 255, 0.2); }
+
+        .reset-link {
+            display: block;
+            text-align: center;
+            margin-top: 24px;
+            color: var(--text-sub);
+            font-size: 13px;
+            text-decoration: none;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        .reset-link:hover { color: var(--primary); }
+
+        @keyframes floatUp { from { opacity: 0; transform: translateY(30px) scale(0.98); } to { opacity: 1; transform: translateY(0) scale(1); } }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        @keyframes slideIn { from { opacity: 0; transform: translateX(-15px); } to { opacity: 1; transform: translateX(0); } }
+    </style>
+</head>
+<body>
+
+<div class="glass-card">
+    <h2>AirShare</h2>
+    <div class="subtitle">局域网无损快传</div>
+    
+    <div class="status-container">
+        <div id="status" class="status-pill">正在初始化...</div>
+    </div>
+
+    <div id="host-panel" class="panel">
+        <div style="text-align: center;">
+            <div class="qr-wrapper">
+                <div id="qrcode"></div>
+            </div>
+            <div style="font-size: 13px; color: var(--text-sub); margin-bottom: 16px; font-weight: 500;">使用另一台设备扫描，或复制链接</div>
+            <div class="link-box" onclick="copyLink()" id="share-link">生成中...</div>
+        </div>
+    </div>
+
+    <div id="guest-panel" class="panel" style="text-align: center; padding: 30px 0;">
+        <div style="font-size: 56px; margin-bottom: 20px; animation: pulse 2.5s infinite; filter: drop-shadow(0 8px 16px rgba(0,122,255,0.2));">📡</div>
+        <div style="font-size: 17px; font-weight: 600;">正在搜索附近的设备...</div>
+        <div style="font-size: 13px; color: var(--text-sub); margin-top: 8px;">请确保双方在同一网络下</div>
+    </div>
+
+    <div id="transfer-panel" class="panel">
+        <div class="drop-zone" id="drop-zone">
+            <span class="drop-icon">☁️</span>
+            <span class="drop-text">轻点或拖拽文件发送</span>
+        </div>
+        <div id="file-list"></div>
+    </div>
+
+    <input type="file" id="file-input" hidden>
+    <div class="reset-link" onclick="resetApp()">断开连接并返回首页</div>
+</div>
+
+<script>
+    const generateId = () => Math.random().toString(36).substr(2, 6);
+    
+    const ui = {
+        status: document.getElementById('status'),
+        host: document.getElementById('host-panel'),
+        guest: document.getElementById('guest-panel'),
+        transfer: document.getElementById('transfer-panel'),
+        drop: document.getElementById('drop-zone'),
+        list: document.getElementById('file-list'),
+        link: document.getElementById('share-link'),
+        input: document.getElementById('file-input')
+    };
+
+    let peer = null;
+    let conn = null;
+    let myId = '';
+    
+    const baseUrl = window.location.href.split('#')[0];
+    const hashId = window.location.hash.substring(1);
+    const isPreviousHost = sessionStorage.getItem('isHost');
+
+    if (hashId && !isPreviousHost) {
+        initGuest(hashId);
+    } else {
+        if (isPreviousHost) history.replaceState(null, null, ' ');
+        sessionStorage.setItem('isHost', 'true');
+        initHost();
+    }
+
+    function updateStatus(text, type = 'normal') {
+        ui.status.innerText = text;
+        ui.status.className = 'status-pill';
+        if (type === 'success') ui.status.classList.add('status-active');
+        if (type === 'error') ui.status.classList.add('status-error');
+    }
+
+    function initHost() {
+        myId = generateId();
+        showPanel('host');
+        
+        peer = new Peer(myId);
+        
+        peer.on('open', (id) => {
+            updateStatus("等待设备连接...");
+            const shareUrl = `${baseUrl}#${id}`;
+            ui.link.innerText = shareUrl;
+            
+            new QRCode(document.getElementById("qrcode"), {
+                text: shareUrl,
+                width: 160,
+                height: 160,
+                colorDark : "#000000",
+                colorLight : "#ffffff",
+                correctLevel : QRCode.CorrectLevel.H
+            });
+        });
+
+        peer.on('connection', (c) => { handleConn(c); });
+        peer.on('error', err => updateStatus("连接服务错误，请刷新", 'error'));
+    }
+
+    function initGuest(targetId) {
+        showPanel('guest');
+        updateStatus("正在连接...", 'normal');
+        
+        myId = generateId();
+        peer = new Peer(myId);
+        
+        peer.on('open', () => {
+            const c = peer.connect(targetId);
+            handleConn(c);
+        });
+        
+        peer.on('error', err => {
+            updateStatus("无法连接主机", 'error');
+            setTimeout(() => {
+                 if(!sessionStorage.getItem('isHost')) resetApp();
+            }, 3000);
+        });
+    }
+
+    function handleConn(connection) {
+        conn = connection;
+        
+        conn.on('open', () => {
+            updateStatus("已安全连接", 'success');
+            showPanel('transfer');
+        });
+
+        conn.on('data', (data) => {
+            if(data.type === 'file') receiveFile(data);
+        });
+
+        conn.on('close', () => {
+            updateStatus("连接已断开", 'error');
+            setTimeout(() => {
+                 if(!sessionStorage.getItem('isHost')) location.reload();
+            }, 2000);
+        });
+    }
+
+    function showPanel(name) {
+        ui.host.style.display = name === 'host' ? 'block' : 'none';
+        ui.guest.style.display = name === 'guest' ? 'block' : 'none';
+        ui.transfer.style.display = name === 'transfer' ? 'block' : 'none';
+    }
+
+    ui.drop.onclick = () => ui.input.click();
+    ui.input.onchange = () => { if(ui.input.files.length) sendFile(ui.input.files[0]); ui.input.value = ''; };
+    
+    ui.drop.addEventListener('dragover', e => { e.preventDefault(); ui.drop.style.borderColor = 'var(--primary)'; ui.drop.style.background = 'rgba(0,122,255,0.08)'; ui.drop.style.transform = 'scale(1.01)'; });
+    ui.drop.addEventListener('dragleave', () => { ui.drop.style.borderColor = ''; ui.drop.style.background = ''; ui.drop.style.transform = '';});
+    ui.drop.addEventListener('drop', e => {
+        e.preventDefault();
+        ui.drop.style.borderColor = ''; ui.drop.style.background = ''; ui.drop.style.transform = '';
+        if(e.dataTransfer.files.length) sendFile(e.dataTransfer.files[0]);
+    });
+
+    function sendFile(file) {
+        if (!conn) return alert('未连接');
+        const item = createLog(file.name, '准备发送...', null);
+        
+        const blob = new Blob([file], { type: file.type });
+        conn.send({ type: 'file', name: file.name, file: blob, mime: file.type });
+        
+        const statusEl = item.querySelector('.file-status');
+        statusEl.innerText = '已发送';
+        statusEl.style.color = '#2E7D32';
+    }
+
+    function receiveFile(data) {
+        const blob = new Blob([data.file], { type: data.mime });
+        const url = URL.createObjectURL(blob);
+        createLog(data.name, '收到文件', url);
+    }
+
+    function createLog(name, statusText, url) {
+        const div = document.createElement('div');
+        div.className = 'file-item';
+        div.innerHTML = `
+            <div class="file-info">
+                <div class="file-name">${name}</div>
+                <div class="file-status">${statusText}</div>
+            </div>
+        `;
+        if (url) {
+            const btn = document.createElement('a');
+            btn.href = url;
+            btn.download = name;
+            btn.className = 'btn-action';
+            btn.innerText = '下载';
+            div.appendChild(btn);
+        }
+        ui.list.prepend(div);
+        return div;
+    }
+
+    function copyLink() {
+        const text = ui.link.innerText;
+        navigator.clipboard.writeText(text).then(() => {
+            const original = ui.link.innerText;
+            ui.link.innerText = " 已复制链接 ";
+            setTimeout(() => ui.link.innerText = original, 2000);
+        }).catch(err => alert('复制失败，请长按链接手动复制'));
+    }
+
+    function resetApp() {
+        sessionStorage.clear();
+        window.location.href = baseUrl;
+    }
+</script>
+<style>@keyframes pulse { 0% { opacity: 0.6; transform: scale(0.96); } 50% { opacity: 1; transform: scale(1); } 100% { opacity: 0.6; transform: scale(0.96); } }</style>
+</body>
+</html>
