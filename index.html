@@ -6,7 +6,7 @@
       name="viewport"
       content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
     <title>Portal</title>
-    <script src="https://unpkg.com/peerjs@1.4.7/dist/peerjs.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/peerjs/1.5.2/peerjs.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
     <style>
       :root {
@@ -35,9 +35,15 @@
       }
 
       @keyframes gradientBG {
-        0% { background-position: 0% 50%; }
-        50% { background-position: 100% 50%; }
-        100% { background-position: 0% 50%; }
+        0% {
+          background-position: 0% 50%;
+        }
+        50% {
+          background-position: 100% 50%;
+        }
+        100% {
+          background-position: 0% 50%;
+        }
       }
 
       .glass-card {
@@ -134,7 +140,9 @@
         flex-grow: 1;
         overflow-y: auto;
       }
-      .panel::-webkit-scrollbar { display: none; }
+      .panel::-webkit-scrollbar {
+        display: none;
+      }
 
       .code-container {
         display: flex;
@@ -182,7 +190,9 @@
         box-shadow: 0 8px 24px rgba(0, 0, 0, 0.04);
         margin-bottom: 20px;
       }
-      .qr-wrapper img { display: block; }
+      .qr-wrapper img {
+        display: block;
+      }
 
       .drop-zone {
         border: 2px dashed rgba(0, 122, 255, 0.25);
@@ -218,7 +228,9 @@
         padding-right: 4px;
         margin-top: 16px;
       }
-      #file-list::-webkit-scrollbar { width: 4px; }
+      #file-list::-webkit-scrollbar {
+        width: 4px;
+      }
       #file-list::-webkit-scrollbar-thumb {
         background: rgba(0, 0, 0, 0.1);
         border-radius: 4px;
@@ -235,7 +247,7 @@
         animation: slideIn 0.3s ease;
         box-shadow: 0 2px 8px rgba(0, 0, 0, 0.02);
       }
-      
+
       .file-item-header {
         display: flex;
         justify-content: space-between;
@@ -270,7 +282,7 @@
       .progress-bg {
         width: 100%;
         height: 6px;
-        background: rgba(0,0,0,0.06);
+        background: rgba(0, 0, 0, 0.06);
         border-radius: 3px;
         overflow: hidden;
       }
@@ -289,7 +301,9 @@
         justify-content: space-between;
       }
 
-      .text-card { background: #fff; }
+      .text-card {
+        background: #fff;
+      }
       .text-content {
         font-size: 14px;
         color: #333;
@@ -328,7 +342,9 @@
         color: #333;
         box-shadow: none;
       }
-      .btn-secondary:hover { background: rgba(0, 0, 0, 0.1); }
+      .btn-secondary:hover {
+        background: rgba(0, 0, 0, 0.1);
+      }
 
       .btn-group {
         display: flex;
@@ -347,7 +363,9 @@
         transition: 0.2s;
         flex-shrink: 0;
       }
-      .reset-link:hover { color: var(--primary); }
+      .reset-link:hover {
+        color: var(--primary);
+      }
 
       .text-toggle {
         text-align: center;
@@ -387,16 +405,32 @@
       }
 
       @keyframes floatUp {
-        from { opacity: 0; transform: translateY(30px) scale(0.98); }
-        to { opacity: 1; transform: translateY(0) scale(1); }
+        from {
+          opacity: 0;
+          transform: translateY(30px) scale(0.98);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0) scale(1);
+        }
       }
       @keyframes fadeIn {
-        from { opacity: 0; }
-        to { opacity: 1; }
+        from {
+          opacity: 0;
+        }
+        to {
+          opacity: 1;
+        }
       }
       @keyframes slideIn {
-        from { opacity: 0; transform: translateX(-15px); }
-        to { opacity: 1; transform: translateX(0); }
+        from {
+          opacity: 0;
+          transform: translateX(-15px);
+        }
+        to {
+          opacity: 1;
+          transform: translateX(0);
+        }
       }
 
       @media (max-width: 480px) {
@@ -404,13 +438,17 @@
           padding: 30px 20px;
           border-radius: 24px;
         }
-        .code-container { gap: 8px; }
+        .code-container {
+          gap: 8px;
+        }
         .code-input {
           height: 56px;
           font-size: 24px;
           border-radius: 10px;
         }
-        h2 { font-size: 24px; }
+        h2 {
+          font-size: 24px;
+        }
       }
     </style>
   </head>
@@ -425,7 +463,12 @@
 
       <div id="entry-panel" class="panel" style="display: block">
         <div class="code-container">
-          <input type="tel" maxlength="1" class="code-input" id="digit-1" autofocus />
+          <input
+            type="tel"
+            maxlength="1"
+            class="code-input"
+            id="digit-1"
+            autofocus />
           <input type="tel" maxlength="1" class="code-input" id="digit-2" />
           <input type="tel" maxlength="1" class="code-input" id="digit-3" />
           <input type="tel" maxlength="1" class="code-input" id="digit-4" />
@@ -446,14 +489,20 @@
             id="display-code">
             ----
           </div>
-          <div style="font-size: 13px; color: var(--text-sub); margin-bottom: 24px;">
+          <div
+            style="
+              font-size: 13px;
+              color: var(--text-sub);
+              margin-bottom: 24px;
+            ">
             本机配对码
           </div>
 
           <div class="qr-wrapper">
             <div id="qrcode"></div>
           </div>
-          <div style="font-size: 13px; color: var(--text-sub); font-weight: 500">
+          <div
+            style="font-size: 13px; color: var(--text-sub); font-weight: 500">
             移动设备扫码连接
           </div>
         </div>
@@ -525,16 +574,16 @@
     <script>
       const PREFIX = "AS-LINK-V1-";
       const generateRandomId = () => Math.random().toString(36).substr(2, 8);
-      const CHUNK_SIZE = 16 * 1024; 
+      const CHUNK_SIZE = 16 * 1024;
 
-      setTimeout(() => { 
-        ui.msgInput.addEventListener('keydown', (e) => {
-          if ((e.key === 'Enter' || e.keyCode === 13) && !e.shiftKey) {
-            e.preventDefault(); 
+      setTimeout(() => {
+        ui.msgInput.addEventListener("keydown", (e) => {
+          if ((e.key === "Enter" || e.keyCode === 13) && !e.shiftKey) {
+            e.preventDefault();
             sendMsg();
           }
         });
-      }, 500); 
+      }, 500);
       const ui = {
         title: document.getElementById("main-title"),
         sub: document.getElementById("main-subtitle"),
@@ -570,11 +619,9 @@
       const hash = window.location.hash.substring(1);
       if (hash.length === 4 && /^\d+$/.test(hash)) {
         initGuestMode(PREFIX + hash);
-      } 
-      else if (hash.startsWith(PREFIX)) {
+      } else if (hash.startsWith(PREFIX)) {
         initGuestMode(hash);
-      } 
-      else {
+      } else {
         initEntryMode();
       }
 
@@ -595,7 +642,9 @@
       }
 
       function checkCode() {
-        const code = Array.from(ui.inputs).map((i) => i.value).join("");
+        const code = Array.from(ui.inputs)
+          .map((i) => i.value)
+          .join("");
         if (code.length === 4) {
           ui.inputs.forEach((i) => i.blur());
           startPairing(code);
@@ -609,7 +658,7 @@
         ui.resetBtn.style.display = "block";
 
         peer = new Peer(targetId);
-        
+
         enforcePrivateIPv4(peer);
 
         peer.on("open", (id) => {
@@ -633,7 +682,7 @@
         ui.displayCode.innerText = code;
         resetToHostWaiting();
         const shareUrl = `${window.location.href.split("#")[0]}#${code}`;
-        
+
         document.getElementById("qrcode").innerHTML = "";
         new QRCode(document.getElementById("qrcode"), {
           text: shareUrl,
@@ -660,7 +709,7 @@
       function joinAsGuest(hostId) {
         isHostMode = false;
         peer = new Peer(generateRandomId());
-        
+
         enforcePrivateIPv4(peer);
 
         peer.on("open", () => {
@@ -683,16 +732,23 @@
       function enforcePrivateIPv4(peerInstance) {
         if (!peerInstance.socket) return;
         const originalSend = peerInstance.socket.send;
-        peerInstance.socket.send = function(data) {
-            if (data.type === 'CANDIDATE' && data.payload && data.payload.candidate) {
-                const candidateStr = data.payload.candidate.candidate || "";
-                const isPrivateIPv4 = /(192\.168\.\d{1,3}\.\d{1,3}|10\.\d{1,3}\.\d{1,3}\.\d{1,3}|172\.(1[6-9]|2\d|3[0-1])\.\d{1,3}\.\d{1,3})/.test(candidateStr);
-                
-                if (!isPrivateIPv4 && !candidateStr.includes('.local')) {
-                     return; 
-                }
+        peerInstance.socket.send = function (data) {
+          if (
+            data.type === "CANDIDATE" &&
+            data.payload &&
+            data.payload.candidate
+          ) {
+            const candidateStr = data.payload.candidate.candidate || "";
+            const isPrivateIPv4 =
+              /(192\.168\.\d{1,3}\.\d{1,3}|10\.\d{1,3}\.\d{1,3}\.\d{1,3}|172\.(1[6-9]|2\d|3[0-1])\.\d{1,3}\.\d{1,3})/.test(
+                candidateStr
+              );
+
+            if (!isPrivateIPv4 && !candidateStr.includes(".local")) {
+              return;
             }
-            originalSend.call(peerInstance.socket, data);
+          }
+          originalSend.call(peerInstance.socket, data);
         };
       }
 
@@ -701,11 +757,16 @@
         conn.on("open", () => {
           updateStatus("已连接", "success");
           showPanel("transfer");
-          try { conn.serialization = 'binary'; } catch(e) {}
+          try {
+            conn.serialization = "binary";
+          } catch (e) {}
         });
 
         conn.on("data", (data) => {
-          if (data.constructor === ArrayBuffer || data.constructor === Uint8Array) {
+          if (
+            data.constructor === ArrayBuffer ||
+            data.constructor === Uint8Array
+          ) {
             handleRawFileChunk(data);
           } else {
             if (data.type === "text") receiveText(data);
@@ -795,33 +856,33 @@
         });
 
         const dataChannel = conn.dataChannel;
-        const HIGH_WATER_MARK = 16 * 1024 * 1024; 
-        
+        const HIGH_WATER_MARK = 16 * 1024 * 1024;
+
         let offset = 0;
         const total = file.size;
         const startTime = Date.now();
         let lastUpdate = startTime;
 
-        const BATCH_SIZE = 1024 * 1024; 
+        const BATCH_SIZE = 1024 * 1024;
 
         const sendLoop = async () => {
           while (offset < total) {
             if (!conn || !conn.open) break;
 
             if (dataChannel.bufferedAmount > HIGH_WATER_MARK) {
-                await new Promise(r => setTimeout(r, 5));
-                continue; 
+              await new Promise((r) => setTimeout(r, 5));
+              continue;
             }
 
             const end = Math.min(offset + BATCH_SIZE, total);
             while (offset < end) {
-                const chunk = file.slice(offset, offset + CHUNK_SIZE);
-                try {
-                     conn.send(await chunk.arrayBuffer());
-                } catch(e) {
-                     break; 
-                }
-                offset += chunk.size;
+              const chunk = file.slice(offset, offset + CHUNK_SIZE);
+              try {
+                conn.send(await chunk.arrayBuffer());
+              } catch (e) {
+                break;
+              }
+              offset += chunk.size;
             }
 
             const now = Date.now();
@@ -830,13 +891,14 @@
               progressEl.style.width = percent + "%";
 
               const elapsed = (now - startTime) / 1000;
-              const speed = elapsed > 0 ? formatSize(offset / elapsed) + "/s" : "计算中...";
+              const speed =
+                elapsed > 0 ? formatSize(offset / elapsed) + "/s" : "计算中...";
 
               speedEl.innerHTML = `<span>${percent}%</span><span>${speed}</span>`;
               statusEl.innerText = "文件发送中...";
               lastUpdate = now;
-              
-              await new Promise(r => setTimeout(r, 0));
+
+              await new Promise((r) => setTimeout(r, 0));
             }
           }
 
@@ -852,7 +914,7 @@
 
       function handleFileStart(data) {
         currentTransferId = data.id;
-        
+
         const logItem = createLog({
           type: "file",
           name: data.name,
@@ -865,7 +927,7 @@
         const progressEl = logItem.querySelector(".progress-fill");
         const speedEl = logItem.querySelector(".speed-text");
         const statusEl = logItem.querySelector(".file-status");
-        
+
         logItem.querySelector(".progress-wrapper").style.display = "block";
 
         incomingFiles[data.id] = {
@@ -878,8 +940,8 @@
           el: logItem,
           ui: { progressEl, speedEl, statusEl },
           uiTimer: setInterval(() => {
-             updateFileUI(data.id);
-          }, 500)
+            updateFileUI(data.id);
+          }, 500),
         };
       }
 
@@ -895,23 +957,26 @@
       }
 
       function updateFileUI(id) {
-         const fileData = incomingFiles[id];
-         if (!fileData) return;
-         const now = Date.now();
-         const elapsed = (now - fileData.startTime) / 1000;
-         const speedBytes = elapsed > 0 ? fileData.received / elapsed : 0;
-         const speed = formatSize(speedBytes) + "/s";
-         const percent = Math.min(100, Math.round((fileData.received / fileData.size) * 100));
-         fileData.ui.progressEl.style.width = percent + "%";
-         fileData.ui.speedEl.innerHTML = `<span>${percent}%</span><span>${speed}</span>`;
-         fileData.ui.statusEl.innerText = "接收中...";
+        const fileData = incomingFiles[id];
+        if (!fileData) return;
+        const now = Date.now();
+        const elapsed = (now - fileData.startTime) / 1000;
+        const speedBytes = elapsed > 0 ? fileData.received / elapsed : 0;
+        const speed = formatSize(speedBytes) + "/s";
+        const percent = Math.min(
+          100,
+          Math.round((fileData.received / fileData.size) * 100)
+        );
+        fileData.ui.progressEl.style.width = percent + "%";
+        fileData.ui.speedEl.innerHTML = `<span>${percent}%</span><span>${speed}</span>`;
+        fileData.ui.statusEl.innerText = "接收中...";
       }
 
       function finishFileReceive(id) {
         const fileData = incomingFiles[id];
         if (fileData.uiTimer) {
-            clearInterval(fileData.uiTimer);
-            fileData.uiTimer = null;
+          clearInterval(fileData.uiTimer);
+          fileData.uiTimer = null;
         }
         fileData.ui.progressEl.style.width = "100%";
         fileData.ui.speedEl.innerHTML = `<span>100%</span><span>完成</span>`;
@@ -925,7 +990,7 @@
         btn.className = "btn-action";
         btn.innerText = "下载";
         fileData.el.querySelector(".file-item-header").appendChild(btn);
-        fileData.chunks = null; 
+        fileData.chunks = null;
       }
 
       function formatSize(bytes) {
@@ -943,7 +1008,11 @@
 
         if (data.type === "text") {
           div.classList.add("text-card");
-          const isUrl = /^((https?:\/\/)?(www\.)?)[a-zA-Z0-9\-\.]+\.[a-zA-Z]{2,}((\/[^\s"]*)?)$/i.test(data.content);          console.log(isUrl,'url')
+          const isUrl =
+            /^((https?:\/\/)?(www\.)?)[a-zA-Z0-9\-\.]+\.[a-zA-Z]{2,}((\/[^\s"]*)?)$/i.test(
+              data.content
+            );
+          console.log(isUrl, "url");
           let displayContent = escapeHtml(data.content);
           let btnsHtml = `<button class="btn-action btn-secondary" onclick="copyText(this, '${escapeHtml(
             data.content
@@ -1056,9 +1125,18 @@
     </script>
     <style>
       @keyframes pulse {
-        0% { opacity: 0.6; transform: scale(0.96); }
-        50% { opacity: 1; transform: scale(1); }
-        100% { opacity: 0.6; transform: scale(0.96); }
+        0% {
+          opacity: 0.6;
+          transform: scale(0.96);
+        }
+        50% {
+          opacity: 1;
+          transform: scale(1);
+        }
+        100% {
+          opacity: 0.6;
+          transform: scale(0.96);
+        }
       }
     </style>
   </body>
